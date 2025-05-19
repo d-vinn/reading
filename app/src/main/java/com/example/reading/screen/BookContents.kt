@@ -58,11 +58,11 @@ fun BookContentsScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text(text = "도서명: ___", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "도서명 : ___", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "저자: ___", fontSize = 16.sp)
+                    Text(text = "저자 : ___", fontSize = 24.sp)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "간략줄거리: ___", fontSize = 16.sp)
+                    Text(text = "간략줄거리 : ___", fontSize = 24.sp)
                 }
                 Box(
                     modifier = Modifier

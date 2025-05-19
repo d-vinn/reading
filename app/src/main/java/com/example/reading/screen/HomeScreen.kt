@@ -19,6 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.material.Text
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -70,9 +76,28 @@ fun HomeScreen(navController: NavHostController) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "OO아 안녕!\n나는 너의 책읽기를 도와줄 리딩이야.\n오늘의 인기 있는 책이나, 너만의 추천도서를 소개해줄게!",
-                        modifier = Modifier.padding(12.dp),
-                        style = MaterialTheme.typography.bodyMedium
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold)) {
+                                append("OO")
+                            }
+                            append("아 안녕!\n나는 너의 책읽기를 도와줄 리딩이야.\n")
+
+                            append("오늘의 ")
+
+                            withStyle(style = SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold)) {
+                                append("인기 있는 책")
+                            }
+
+                            append("이나, \n")
+
+                            withStyle(style = SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold)) {
+                                append("너만의 추천도서")
+                            }
+
+                            append("를 소개해줄게!")
+                        },
+                        modifier = Modifier.padding(13.dp),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp) // 필요시 전체 크기 조정
                     )
                 }
             }
@@ -81,6 +106,7 @@ fun HomeScreen(navController: NavHostController) {
 
             Text(
                 text = "오늘의 베스트 도서",
+                fontSize = 24.sp,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -112,7 +138,11 @@ fun HomeScreen(navController: NavHostController) {
                 onClick = { navController.navigate("TodayRec") },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("오늘의 추천도서 바로가기 >")
+                Text("오늘의 추천도서 바로가기 >",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF073042)
+                    )
             }
         }
     }

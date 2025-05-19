@@ -45,8 +45,10 @@ class MainActivity : ComponentActivity() {
             ReadingTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
-                    NavHost(navController, startDestination = "splash") {
-                        composable("splash") { SplashScreen(navController) }
+                    NavHost(navController, startDestination = "start") {
+                        composable("start") { StartScreen(navController) }
+                        composable("signup") { SignupScreen(navController) }
+                        composable("login") { LoginScreen(navController) }
                         composable("consent") { ConsentScreen(navController) }
                         composable("emotion") { EmotionSelectionScreen(navController) }
                         composable("TodayDo") { TodayDoScreen(navController) }
@@ -79,89 +81,5 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun SplashScreen(navController: NavHostController) {
-    LaunchedEffect(Unit) {
-        delay(1500) // 3초 대기
-        navController.navigate("consent") {
-            popUpTo("splash") { inclusive = true } // 뒤로가기 방지
-        }
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Readers", fontSize = 32.sp)
-        Spacer(modifier = Modifier.height(16.dp))
-        Image(
-            painter = painterResource(id = R.drawable.main),
-            contentDescription = "Readers Image",
-            modifier = Modifier.size(100.dp)
-        )
-    }
-}
-
-@Composable
-fun ConsentScreen(navController: NavHostController) {
-    var selectedOption by remember { mutableStateOf<String?>(null) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "[필수] 더욱 개인화된 추천을 위해 유튜브 구독 목록을 활용합니다.",
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        RadioOption(
-            label = "동의합니다",
-            selected = selectedOption == "agree",
-            onSelect = { selectedOption = "agree" }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        RadioOption(
-            label = "동의하지 않습니다",
-            selected = selectedOption == "disagree",
-            onSelect = { selectedOption = "disagree" }
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = { navController.navigate("emotion") },
-            enabled = selectedOption != null
-        ) {
-            Text("다음")
-        }
-    }
-}
-
-@Composable
-fun RadioOption(label: String, selected: Boolean, onSelect: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp)
-    ) {
-        RadioButton(
-            selected = selected,
-            onClick = onSelect,
-            colors = RadioButtonDefaults.colors(
-                selectedColor = MaterialTheme.colorScheme.primary
-            )
-        )
-        Text(text = label, fontSize = 16.sp)
-    }
-}
 
 

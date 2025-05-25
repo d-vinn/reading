@@ -20,11 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel // viewModel 함수 임포
 // TODO: UserRecommendationProfileViewModel 클래스 별도 구현 필요 (위에 수정된 내용 참고)
 
 @Composable
-fun CategoryScreen(
-    navController: NavHostController
-    // TODO: TodayDoScreen에서 넘겨받은 userInterest 파라미터 제거
-    // userInterest: String? // 이 파라미터는 제거합니다.
-) {
+fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendationProfileViewModel) { // <--- 이 줄이 핵심 변경
     // Shared ViewModel 인스턴스 가져오기
     // ViewModel 스코프 설정은 네비게이션 그래프 설정 시 이루어져야 합니다.
     val viewModel: UserRecommendationProfileViewModel = viewModel()
@@ -129,7 +125,7 @@ fun CategoryScreen(
             // TODO: ViewModel에 데이터 저장 후 HomeScreen으로 네비게이션
             onClick = {
                 // 현재 CategoryScreen에서 선택/입력된 값을 ViewModel에 저장
-                viewModel.setCategoryAndOther(selectedCategories.toList(), otherInput) // setCategoryAndOther 함수 호출
+//                viewModel.setCategoryAndOther(selectedCategories.toList(), otherInput) // setCategoryAndOther 함수 호출
 
                 // HomeScreen으로 네비게이션 (ViewModel이 데이터를 가지고 있으므로 인자 전달 불필요)
                 navController.navigate("home") // TODO: 네비게이션 그래프에 정의된 정확한 라우트 이름 사용

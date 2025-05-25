@@ -34,10 +34,10 @@ import coil.compose.AsyncImage // Coil 이미지 로딩
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TodayRecScreen(navController: NavController) {
+fun TodayRecScreen(navController: NavController, viewModel: UserRecommendationProfileViewModel) { // <--- 이 줄이 핵심 변경
     // Shared ViewModel 인스턴스 가져오기
     // MainActivity에서 ViewModelStoreOwner를 지정했으므로 동일 인스턴스를 가져옵니다.
-    val viewModel: UserRecommendationProfileViewModel = viewModel()
+//    val viewModel: UserRecommendationProfileViewModel = viewModel()
 
     // ViewModel의 추천 상태 관찰
     val recommendationState by viewModel.recommendationState.collectAsState()

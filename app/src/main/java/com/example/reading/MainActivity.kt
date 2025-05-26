@@ -3,40 +3,20 @@ package com.example.reading
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.*
-import kotlinx.coroutines.delay
-import com.example.reading.ui.theme.ReadingTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.*
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.reading.ui.theme.ReadingTheme
-
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+// Logcat 임포트 추가 (테스트용)
+import android.util.Log
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,17 +25,48 @@ class MainActivity : ComponentActivity() {
             ReadingTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
-                    NavHost(navController, startDestination = "start") {
-                        composable("start") { StartScreen(navController) }
-                        composable("signup") { SignupScreen(navController) }
-                        composable("login") { LoginScreen(navController) }
-                        composable("consent") { ConsentScreen(navController) }
-                        composable("emotion") { EmotionSelectionScreen(navController) }
-                        composable("TodayDo") { TodayDoScreen(navController) }
-                        composable("category") { CategoryScreen(navController) }
-                        composable("home") { HomeScreen(navController)}
-                        composable("BookContents") { BookContentsScreen(navController) }
-                        composable("TodayRec") { TodayRecScreen(navController)}
+
+                    val activityViewModelStoreOwner = checkNotNull(LocalContext.current as? ViewModelStoreOwner) {
+                        "Context is not a ViewModelStoreOwner"
+                    }
+
+                    // ViewModel 인스턴스를 여기서 한 번만 가져옵니다.
+                    val sharedViewModel: UserRecommendationProfileViewModel = viewModel(viewModelStoreOwner = activityViewModelStoreOwner)
+                    Log.d("MainActivity", "Shared ViewModel Instance Hash: ${System.identityHashCode(sharedViewModel)}")
+
+
+                    NavHost(navController = navController, startDestination = "start") {
+                        composable("start") { StartScreen(navController = navController) }
+
+                        // ViewModel 인스턴스를 각 화면 컴포저블에 인자로 직접 전달
+                        composable("signup") {
+                            SignupScreen(navController = navController, viewModel = sharedViewModel) // <-- ViewModel 인자로 전달
+                        }
+                        composable("login") {
+                            LoginScreen(navController = navController)
+                        }
+                        composable("consent") {
+                            ConsentScreen(navController = navController)
+                        }
+                        composable("emotion") {
+                            EmotionSelectionScreen(navController = navController)
+                        }
+                        composable("TodayDo") {
+                            TodayDoScreen(navController = navController, viewModel = sharedViewModel) // <-- ViewModel 인자로 전달
+                        }
+                        composable("category") {
+                            CategoryScreen(navController = navController, viewModel = sharedViewModel) // <-- ViewModel 인자로 전달 (만약 CategoryScreen에서 사용한다면)
+                        }
+                        composable("home") {
+                            HomeScreen(navController = navController, viewModel = sharedViewModel) // <-- ViewModel 인자로 전달
+                        }
+
+                        composable("BookContents") {
+                            BookContentsScreen(navController = navController)
+                        }
+                        composable("TodayRec") {
+                            TodayRecScreen(navController = navController, viewModel = sharedViewModel) // <-- ViewModel 인자로 전달
+                        }
                         composable("minilib") { MiniLibScreen(navController)}
                         composable("set") { SettingsScreen(navController)}
                         composable(
@@ -66,7 +77,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         ) { backStackEntry ->
-                            // navArgument에서 책장 이름 가져오기
                             val bookshelfName = backStackEntry.arguments?.getString("bookshelfName") ?: ""
                             BookCaseScreen(navController = navController, bookshelfName = bookshelfName)
                         }
@@ -81,6 +91,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-

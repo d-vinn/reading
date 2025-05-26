@@ -50,7 +50,7 @@ fun BookReportScreen(navController: NavController) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
                     selected = false,
-                    onClick = { /* settings */ }
+                    onClick = { "set" }
                 )
             }
         }
@@ -193,6 +193,19 @@ fun BookReportScreen(navController: NavController) {
                         color = Color.Gray
                     )
                 }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 완료 버튼 추가
+            Button(
+                onClick = { navController.navigate("eval") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = "완료")
             }
         }
     }

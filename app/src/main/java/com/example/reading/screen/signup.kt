@@ -20,6 +20,7 @@ fun SignupScreen(navController: NavController) {
     var gender by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -90,6 +91,15 @@ fun SignupScreen(navController: NavController) {
             onValueChange = { email = it },
             label = { Text("이메일") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("비밀번호") },
             modifier = Modifier.fillMaxWidth()
         )
 

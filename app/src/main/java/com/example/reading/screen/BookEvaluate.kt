@@ -37,7 +37,7 @@ fun BookEvaluateScreen(navController: NavController) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
                     selected = false,
-                    onClick = { /* settings */ }
+                    onClick = { "set" }
                 )
             }
         }
@@ -86,8 +86,10 @@ fun BookEvaluateScreen(navController: NavController) {
             var selectedLabel by remember { mutableStateOf<String?>(null) }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 labels.forEach { label ->
                     Button(
@@ -96,15 +98,22 @@ fun BookEvaluateScreen(navController: NavController) {
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 4.dp),
+                            .height(40.dp), // 높이 지정
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (selectedLabel == label) Color(0xFF90CAF9) else Color.LightGray
-                        )
+                        ),
+                        contentPadding = PaddingValues(horizontal = 4.dp)
                     ) {
-                        Text(label, fontSize = 12.sp)
+                        Text(
+                            text = label,
+                            fontSize = 12.sp,
+                            maxLines = 1, // 한 줄로 표시
+                            softWrap = false // 줄바꿈 금지
+                        )
                     }
                 }
             }
+
 
 
             Spacer(modifier = Modifier.height(32.dp))

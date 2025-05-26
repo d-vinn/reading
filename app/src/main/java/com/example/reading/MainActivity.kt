@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
                         composable("BookContents") { BookContentsScreen(navController) }
                         composable("TodayRec") { TodayRecScreen(navController)}
                         composable("minilib") { MiniLibScreen(navController)}
+                        composable("set") { SettingsScreen(navController)}
                         composable(
                             route = "bookCase/{bookshelfName}",
                             arguments = listOf(

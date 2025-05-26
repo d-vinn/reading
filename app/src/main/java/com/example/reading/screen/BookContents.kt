@@ -32,17 +32,17 @@ fun BookContentsScreen(navController: NavController) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.LibraryBooks, contentDescription = "Bookshelf") },
                     selected = false,
-                    onClick = { /* bookshelf navigation */ }
+                    onClick = { "minilib" }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Email, contentDescription = "Notes") },
                     selected = false,
-                    onClick = { /* notes navigation */ }
+                    onClick = { "notes" }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
                     selected = false,
-                    onClick = { /* settings navigation */ }
+                    onClick = { "set" }
                 )
             }
         }

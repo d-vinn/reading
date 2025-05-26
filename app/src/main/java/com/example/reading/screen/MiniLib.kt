@@ -56,17 +56,17 @@ fun MiniLibScreen(navController: NavController) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.LibraryBooks, contentDescription = "Bookshelf") },
                     selected = true,
-                    onClick = { /* 현재 화면 */ }
+                    onClick = { navController.navigate("minilib") }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Email, contentDescription = "Notes") },
                     selected = false,
-                    onClick = { /* notes navigation */ }
+                    onClick = { navController.navigate("notes") }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
                     selected = false,
-                    onClick = { /* settings navigation */ }
+                    onClick = { navController.navigate("set") }
                 )
             }
         }

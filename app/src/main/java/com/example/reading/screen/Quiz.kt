@@ -46,7 +46,7 @@ fun QuizScreen(navController: NavController) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
                     selected = false,
-                    onClick = { /* 설정 페이지로 이동 */ }
+                    onClick = { "set" }
                 )
             }
         }

@@ -50,7 +50,7 @@ fun LoginScreen(navController: NavController) {
 
         Button(
             onClick = {
-                navController.navigate("emotion")
+                navController.navigate("TodayDo")
             },
             modifier = Modifier.fillMaxWidth()
         ) {

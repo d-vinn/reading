@@ -12,32 +12,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.style.TextAlign // TextAlign 임포트
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
-import androidx.lifecycle.viewmodel.compose.viewModel // viewModel 함수 임포트
-// import androidx.compose.ui.platform.LocalLifecycleOwner // ViewModel 스코프 지정을 위해 필요할 수 있음
-
-// TODO: UserRecommendationProfileViewModel 클래스 별도 구현 필요 (위에 수정된 내용 참고)
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendationProfileViewModel) { // <--- 이 줄이 핵심 변경
-    // Shared ViewModel 인스턴스 가져오기
-    // ViewModel 스코프 설정은 네비게이션 그래프 설정 시 이루어져야 합니다.
-    val viewModel: UserRecommendationProfileViewModel = viewModel()
+fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendationProfileViewModel = viewModel()) { // <--- ViewModel 인스턴스를 명시적으로 한 번만 가져옴 (기본값 설정)
 
+    // ViewModel에서 selectedCategories 및 otherInterest 상태를 collectAsState로 읽어옵니다.
+    // 이렇게 해야 ViewModel의 상태 변경이 UI에 반영되고, UI 입력이 ViewModel에 저장됩니다.
+    val selectedCategories by viewModel.selectedCategories.collectAsState()
+    val otherInterest by viewModel.otherInterest.collectAsState()
 
-    // TODO: ViewModel 상태를 읽어오도록 변경 고려
-    // val selectedCategories = viewModel.selectedCategories.collectAsState().value
     val categories = listOf("운동", "공상", "요리", "동물", "곤충", "친구")
-    val selectedCategories = remember { mutableStateListOf<String>() } // TODO: ViewModel로 이동 고려
-
-    // TODO: ViewModel 상태를 읽어오도록 변경 고려
-    // var otherInput by remember { viewModel.otherInput.collectAsState() }
-    var otherInput by remember { mutableStateOf("") } // TODO: ViewModel로 이동 고려
-
-
-    // TODO: ViewModel에 userInterest 저장 로직 제거 (TodayDoScreen에서 이미 저장했음)
-    // LaunchedEffect(userInterest) { ... } // 이 블록은 제거합니다.
 
 
     Column(
@@ -52,7 +39,7 @@ fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendati
             text = "오늘은 어떤 것에 대해 알고 싶어?\n관심사를 모두 선택해봐!",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center // TextAlign 임포트 필요
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -70,20 +57,19 @@ fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendati
                     rowItems.forEach { category ->
                         OutlinedButton(
                             onClick = {
-                                // TODO: ViewModel 함수 호출로 변경 고려
-                                if (selectedCategories.contains(category)) {
-                                    selectedCategories.remove(category)
+                                // ViewModel 함수 호출로 변경: 선택된 카테고리를 ViewModel에 업데이트
+                                val newSelectedCategories = if (selectedCategories.contains(category)) {
+                                    selectedCategories.minus(category) // 제거
                                 } else {
-                                    selectedCategories.add(category)
+                                    selectedCategories.plus(category) // 추가
                                 }
+                                viewModel.setSelectedCategories(newSelectedCategories)
                             },
                             colors = ButtonDefaults.outlinedButtonColors(
-                                // TODO: ViewModel 상태에 따라 색상 변경 로직 수정 필요
                                 containerColor = if (selectedCategories.contains(category)) Color.Magenta.copy(alpha = 0.1f) else Color.Transparent,
                                 contentColor = Color.Black
                             ),
                             border = BorderStroke(2.dp,
-                                // TODO: ViewModel 상태에 따라 보더 색상 변경 로직 수정 필요
                                 if (selectedCategories.contains(category)) Color.Magenta else Color.Gray
                             ),
                             shape = RoundedCornerShape(12.dp),
@@ -107,10 +93,10 @@ fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendati
         ) {
             Text(text = "기타:", fontSize = 16.sp, modifier = Modifier.padding(end = 8.dp))
             TextField(
-                // TODO: ViewModel 상태와 연결 고려
-                value = otherInput,
-                onValueChange = {
-                    otherInput = it // TODO: ViewModel 함수 호출로 변경 고려
+                // ViewModel 상태와 연결
+                value = otherInterest ?: "", // otherInterest가 null일 경우 빈 문자열 표시
+                onValueChange = { newValue ->
+                    viewModel.setOtherInterest(newValue) // ViewModel 함수 호출로 변경
                 },
                 placeholder = { Text("입력해주세요") },
                 modifier = Modifier
@@ -122,15 +108,19 @@ fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendati
 
         // 다음 버튼
         Button(
-            // TODO: ViewModel에 데이터 저장 후 HomeScreen으로 네비게이션
             onClick = {
-                // 현재 CategoryScreen에서 선택/입력된 값을 ViewModel에 저장
-//                viewModel.setCategoryAndOther(selectedCategories.toList(), otherInput) // setCategoryAndOther 함수 호출
+                // 이 시점에서 ViewModel에는 `selectedCategories`와 `otherInterest`가 이미 저장되어 있습니다.
+                // 이제 서버에 추천 요청을 보낼 차례입니다.
+                // 일반적으로 '다음' 버튼은 다음 화면으로 이동하고, 서버 요청은 다음 화면에서
+                // 모든 사용자 입력이 완료된 후 트리거하는 것이 좋습니다.
+                // 만약 이 화면에서 바로 요청을 보내려면 여기에 viewModel.fetchRecommendations() 호출을 추가합니다.
+                // 예시:
+                // viewModel.fetchRecommendations()
 
-                // HomeScreen으로 네비게이션 (ViewModel이 데이터를 가지고 있으므로 인자 전달 불필요)
-                navController.navigate("home") // TODO: 네비게이션 그래프에 정의된 정확한 라우트 이름 사용
+                navController.navigate("home")
             },
-            enabled = selectedCategories.isNotEmpty() || otherInput.isNotBlank(), // 입력 값이 있거나 카테고리가 하나 이상 선택되었을 때 활성화
+            // 'otherInterest'는 nullable이므로 .isNullOrBlank() 사용
+            enabled = selectedCategories.isNotEmpty() || !otherInterest.isNullOrBlank(),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("다음")

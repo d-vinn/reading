@@ -1,6 +1,5 @@
 package com.example.reading
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,17 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.style.TextAlign // TextAlign 임포트
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel // viewModel 함수 임포트
-import androidx.compose.ui.res.colorResource
-
 // import androidx.compose.ui.platform.LocalLifecycleOwner // ViewModel 스코프 지정을 위해 필요할 수 있음
 
 // TODO: UserRecommendationProfileViewModel 클래스 별도 구현 필요 (위에 수정된 내용 참고)
@@ -40,7 +34,6 @@ fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendati
     // TODO: ViewModel 상태를 읽어오도록 변경 고려
     // var otherInput by remember { viewModel.otherInput.collectAsState() }
     var otherInput by remember { mutableStateOf("") } // TODO: ViewModel로 이동 고려
-    val kidFont = FontFamily(Font(R.font.uhbee_puding))
 
 
     // TODO: ViewModel에 userInterest 저장 로직 제거 (TodayDoScreen에서 이미 저장했음)
@@ -54,17 +47,15 @@ fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendati
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = "오늘은 어떤 것에 대해 알고 싶어?\n관심사를 모두 선택해봐!",
-            fontSize = 25.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center, // TextAlign 임포트 필요
-            lineHeight = 54.sp,
-            style = TextStyle(fontFamily = kidFont)
+            textAlign = TextAlign.Center // TextAlign 임포트 필요
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // 선택지 버튼
         Column(
@@ -88,12 +79,12 @@ fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendati
                             },
                             colors = ButtonDefaults.outlinedButtonColors(
                                 // TODO: ViewModel 상태에 따라 색상 변경 로직 수정 필요
-                                containerColor = if (selectedCategories.contains(category)) Color(0xFF9EDC9A).copy(alpha = 0.1f) else Color.Transparent,
+                                containerColor = if (selectedCategories.contains(category)) Color.Magenta.copy(alpha = 0.1f) else Color.Transparent,
                                 contentColor = Color.Black
                             ),
                             border = BorderStroke(2.dp,
                                 // TODO: ViewModel 상태에 따라 보더 색상 변경 로직 수정 필요
-                                if (selectedCategories.contains(category)) Color(0xFF9EDC9A) else Color.Gray
+                                if (selectedCategories.contains(category)) Color.Magenta else Color.Gray
                             ),
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier
@@ -107,36 +98,27 @@ fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendati
             }
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // 기타 입력
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "기타:",
-                fontSize = 16.sp,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-
-            OutlinedTextField(
+            Text(text = "기타:", fontSize = 16.sp, modifier = Modifier.padding(end = 8.dp))
+            TextField(
+                // TODO: ViewModel 상태와 연결 고려
                 value = otherInput,
-                onValueChange = { otherInput = it },
+                onValueChange = {
+                    otherInput = it // TODO: ViewModel 함수 호출로 변경 고려
+                },
+                placeholder = { Text("입력해주세요") },
                 modifier = Modifier
-                    .width(280.dp)
-                    .height(180.dp),
-                placeholder = { Text("여기에 작성해 주세요") },
-                label = { Text("여기에 작성해 주세요", color = colorResource(id = R.color.light_green)) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.DarkGray,
-                    unfocusedBorderColor = Color.DarkGray,
-                    cursorColor = Color.DarkGray
-                )
+                    .fillMaxWidth()
             )
         }
 
-        Spacer(modifier = Modifier.height(60.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         // 다음 버튼
         Button(
@@ -149,13 +131,7 @@ fun CategoryScreen(navController: NavHostController, viewModel: UserRecommendati
                 navController.navigate("home") // TODO: 네비게이션 그래프에 정의된 정확한 라우트 이름 사용
             },
             enabled = selectedCategories.isNotEmpty() || otherInput.isNotBlank(), // 입력 값이 있거나 카테고리가 하나 이상 선택되었을 때 활성화
-            modifier = Modifier
-                .width(130.dp)
-                .height(48.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.light_green), // 연두색
-                contentColor = Color.White // 텍스트 컬러
-            )
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("다음")
         }

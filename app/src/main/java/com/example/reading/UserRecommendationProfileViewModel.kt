@@ -144,7 +144,7 @@ class UserRecommendationProfileViewModel : ViewModel() {
 
         val currentProfile = getUserProfileData()
         Log.d("RecViewModel", "현재 프로필: userId=${currentProfile.userId}, age=${currentProfile.age}, userInterest=${currentProfile.userInterest}")
-        // 서버의 필수 입력값 (user_id, user_interests_summary, age) 누락 검증
+        // 서버의 필수 입력값 (user_id, user_daily_interest, age) 누락 검증 (필드명 변경에 맞춰 수정)
         if (currentProfile.userId.isNullOrBlank() || currentProfile.age.isNullOrBlank() || currentProfile.userInterest.isNullOrBlank()) {
             _recommendationState.value = RecommendationState.Error("추천에 필요한 사용자 정보(ID, 나이, 오늘 있었던 일)가 부족합니다.")
             Log.e("RecViewModel", "필수 사용자 정보 부족. 요청 취소됨.")
@@ -156,28 +156,33 @@ class UserRecommendationProfileViewModel : ViewModel() {
 
         viewModelScope.launch {
             var response: Response? = null
-            var responseText: String? = null // 응답 본문을 읽기 위한 변수
+            var responseText: String? = null
 
             try {
-                // 사용자 관심사 및 활동 정보를 통합하여 하나의 문자열로 만듭니다.
-                // 서버가 'user_interests_summary' 필드를 기대하므로 이 이름으로 데이터를 보냅니다.
-                val interestSummary = buildString {
-                    append("오늘 있었던 일: ${currentProfile.userInterest}")
+                // selectedCategories와 otherInterest를 합쳐 하나의 문자열로 만듭니다.
+                val combinedOtherInterests = buildString {
                     if (currentProfile.selectedCategories.isNotEmpty()) {
-                        append(". 관심사 카테고리: ${currentProfile.selectedCategories.joinToString(", ")}")
+                        append(currentProfile.selectedCategories.joinToString(", "))
                     }
                     if (!currentProfile.otherInterest.isNullOrBlank()) {
-                        append(". 기타 관심사: ${currentProfile.otherInterest}")
+                        if (isNotEmpty()) { // 이미 내용이 있으면 구분자 추가
+                            append(". ")
+                        }
+                        append(currentProfile.otherInterest)
                     }
                 }
 
                 // 요청 본문 JSON 구성
                 val jsonBody = JSONObject().apply {
                     put("user_id", currentProfile.userId)
-                    // 서버가 'user_interests_summary'를 기대하므로 이 필드 이름을 사용합니다.
-                    put("user_interests_summary", interestSummary) // <-- 이 필드 이름은 변경하지 않습니다.
                     put("age", currentProfile.age)
-                    put("gender", currentProfile.gender ?: "") // 서버가 필요로 하지 않는다면 제거를 고려하거나, 서버와 협의
+                    put("gender", currentProfile.gender ?: "")
+
+                    // userInterest는 분리하여 보냅니다.
+                    put("user_daily_interest", currentProfile.userInterest) // 새 필드명
+
+                    // selectedCategories와 otherInterest 합친 내용을 보냅니다.
+                    put("user_combined_other_interests", combinedOtherInterests) // 새 필드명
                 }
                 Log.d("RecViewModel", "요청 URL: $RECOMMENDATION_API_URL")
                 Log.d("RecViewModel", "요청 Body: ${jsonBody.toString(2)}") // JSON 예쁘게 출력
@@ -194,15 +199,14 @@ class UserRecommendationProfileViewModel : ViewModel() {
 
                 Log.d("RecViewModel", "OkHttp 요청 실행 전.")
 
-                // 네트워크 작업 (요청 실행 및 응답 본문 읽기) 전체를 IO 디스패처에서 실행합니다.
                 withContext(Dispatchers.IO) {
                     response = okHttpClient.newCall(request).execute()
-                    responseText = response?.body?.string() // 응답 본문을 여기서 읽습니다.
+                    responseText = response?.body?.string()
                 }
 
                 Log.d("RecViewModel", "OkHttp 응답 수신. 코드: ${response?.code}, 성공여부: ${response?.isSuccessful}")
 
-                if (response?.isSuccessful == true) { // 2xx 응답 코드
+                if (response?.isSuccessful == true) {
                     Log.d("RecViewModel", "응답 성공: $responseText")
 
                     if (responseText != null) {
@@ -245,20 +249,17 @@ class UserRecommendationProfileViewModel : ViewModel() {
                         val errorMessage = jsonError.optString("error", "알 수 없는 서버 오류")
                         _recommendationState.value = RecommendationState.Error("서버 오류 (${response?.code}): $errorMessage")
                     } catch (e: Exception) {
-                        // 서버에서 JSON이 아닌 일반 텍스트 오류를 보낼 경우
                         _recommendationState.value = RecommendationState.Error("서버 오류 (${response?.code}): $errorBody")
                     }
                 }
 
             } catch (e: IOException) {
-                // SocketTimeoutException도 IOException의 하위 클래스입니다.
                 Log.e("RecViewModel", "네트워크 오류 발생: ${e.message}", e)
                 _recommendationState.value = RecommendationState.Error("네트워크 오류 발생: ${e.localizedMessage ?: e.message ?: "Unknown network error"}")
             } catch (e: Exception) {
                 Log.e("RecViewModel", "예기치 않은 오류 발생: ${e.message}", e)
                 _recommendationState.value = RecommendationState.Error("예기치 않은 오류 발생: ${e.localizedMessage ?: e.message ?: "Unknown error"}")
             } finally {
-                // OkHttp ResponseBody는 항상 닫아주어야 리소스 누수를 방지합니다.
                 response?.body?.close()
                 Log.d("RecViewModel", "fetchRecommendations() 호출 종료.")
             }

@@ -85,6 +85,7 @@ class MainActivity : ComponentActivity() {
                         composable("report"){ BookReportScreen(navController) }
                         composable("quiz"){ QuizScreen (navController) }
                         composable("img"){MakeAiImgScreen(navController)}
+                        composable("newimg"){ModifiedImageScreen(navController)}
                     }
                 }
             }

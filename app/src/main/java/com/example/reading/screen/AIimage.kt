@@ -1,16 +1,14 @@
 package com.example.reading
 
-import android.net.Uri
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LibraryBooks
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,36 +16,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.res.colorResource
 
 @Composable
-fun MakeAiImgScreen(navController: NavController) {
-    val context = LocalContext.current
-    val kidFont = FontFamily(Font(R.font.uhbee_puding))
+fun ModifiedImageScreen(navController: NavController) {
+    var selectedIndex by remember { mutableStateOf(2) }
+
     val selectedBgColor = Color(0xFFB9D99A) // #B9D99A
     val unselectedColor = Color.Gray
-
-
-    var selectedIndex by remember { mutableStateOf(2) }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-
-    // 이미지 선택용 런처
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imageUri = uri
-        if (uri == null) {
-            Toast.makeText(context, "이미지를 선택하지 않았습니다.", Toast.LENGTH_SHORT).show()
-        }
-    }
+    val kidFont = FontFamily(Font(R.font.uhbee_puding))
 
     Scaffold(
         bottomBar = {
@@ -66,8 +51,7 @@ fun MakeAiImgScreen(navController: NavController) {
                 ) {
                     NavigationBarItem(
                         selected = selectedIndex == 0,
-                        onClick = { selectedIndex = 0
-                                  navController.navigate("home")},
+                        onClick = { selectedIndex = 0 },
                         icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                         label = { Text("home", fontSize = 11.sp) },
                         alwaysShowLabel = true,
@@ -117,7 +101,8 @@ fun MakeAiImgScreen(navController: NavController) {
                         selected = selectedIndex == 3,
                         onClick = {
                             selectedIndex = 3
-                            navController.navigate("set")},
+                            navController.navigate("set")
+                        },
                         icon = { Icon(Icons.Default.Settings, contentDescription = "Setting") },
                         label = { Text("setting", fontSize = 11.sp) },
                         alwaysShowLabel = true,
@@ -137,68 +122,29 @@ fun MakeAiImgScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start
+                .padding(top = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 상단 도서 정보
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Text("도서명 : 책 먹는 여우\n저자 : 프란치스카 비어만", fontSize = 32.sp, style = TextStyle(fontFamily = kidFont))
-            }
-
-            Spacer(modifier = Modifier.height(22.dp))
-
-            // +그림 올리기 버튼
-            Button(onClick = {
-                galleryLauncher.launch("image/*")
-            },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.light_green)
-                )
-            ) {
-                Text("+그림 올리기", style = TextStyle(fontFamily = kidFont))
-            }
+            Text(
+                text = "짠~~!\n너가 그린 그림을\n조금 변경해봤어!",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 20.dp),
+                style = TextStyle(fontFamily = kidFont)
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 큰 네모 영역: 이미지 미리보기 또는 빈칸
-            Box(
+            Image(
+                painter = painterResource(id = R.drawable.img1),
+                contentDescription = "Modified Image",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-                    .border(1.dp, Color.Gray)
-                    .background(Color(0xFFF5F5F5)),
-                contentAlignment = Alignment.Center
-            ) {
-                if (imageUri != null) {
-                    Image(
-                        painter = rememberAsyncImagePainter(imageUri),
-                        contentDescription = "선택한 이미지",
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    Text("여기에 이미지가 표시됩니다", color = Color.Gray, style = TextStyle(fontFamily = kidFont))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // 완료 버튼 추가
-            Button(
-                onClick = { navController.navigate("newimg") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp)
-                    .align(Alignment.CenterHorizontally),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.light_green)
-                )
-            ) {
-                Text(text = "완료", style = TextStyle(fontFamily = kidFont))
-            }
+                    .fillMaxWidth(0.8f)
+                    .aspectRatio(1f) // 원하는 비율로 조정
+            )
         }
     }
 }
+
+

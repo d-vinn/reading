@@ -65,12 +65,12 @@ fun BookCaseScreen(navController: NavController, bookshelfName: String) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Email, contentDescription = "Notes") },
                     selected = false,
-                    onClick = { "notes" }
+                    onClick = { navController.navigate("notes") }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
                     selected = false,
-                    onClick = { "set" }
+                    onClick = { navController.navigate("set") }
                 )
             }
         }

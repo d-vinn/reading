@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                         composable("TodayRec") {
                             TodayRecScreen(navController = navController, viewModel = sharedViewModel) // <-- ViewModel 인자로 전달
                         }
-                        composable("minilib") { MiniLibScreen(navController)}
+                        composable("minilib") { MiniLibScreen(navController = navController, viewModel = sharedViewModel)}
                         composable("set") { SettingsScreen(navController)}
                         composable(
                             route = "bookCase/{bookshelfName}",
@@ -80,7 +80,7 @@ class MainActivity : ComponentActivity() {
                             val bookshelfName = backStackEntry.arguments?.getString("bookshelfName") ?: ""
                             BookCaseScreen(navController = navController, bookshelfName = bookshelfName)
                         }
-                        composable("notes") { ReadBookListScreen(navController) }
+                        composable("notes") { ReadBookListScreen(navController = navController, viewModel = sharedViewModel) }
                         composable("eval"){ BookEvaluateScreen(navController) }
                         composable("report"){ BookReportScreen(navController) }
                         composable("quiz"){ QuizScreen (navController) }

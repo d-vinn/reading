@@ -29,6 +29,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.collectAsState // collectAsState를 사용하여 StateFlow 관찰
 import androidx.compose.runtime.getValue // by 키워드를 사용하기 위해 필요
 import android.util.Log // Logcat 출력을 위해 추가
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.Font
+import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 
 
 // TODO: UserRecommendationProfileViewModel 클래스 필요 (이전 단계 참고)
@@ -41,30 +51,93 @@ fun HomeScreen(navController: NavHostController, viewModel: UserRecommendationPr
 
     // ViewModel에서 사용자 이름을 관찰합니다.
     val userName by viewModel.userName.collectAsState() // <-- ViewModel의 userName 상태를 관찰
+    val kidFont = FontFamily(Font(R.font.uhbee_puding))
+    val selectedBgColor = Color(0xFFB9D99A) // #B9D99A
+    val unselectedColor = Color.Gray
+    val shfont = FontFamily(Font(R.font.uhbee_se_hyun))
+    var selectedIndex by remember { mutableStateOf(0) }
+    val myGreen = Color(0xFF63A621)
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    selected = true,
-                    onClick = { /* 현재 화면이므로 네비게이션 필요 없을 수 있음 */ }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.LibraryBooks, contentDescription = "Bookshelf") },
-                    selected = false,
-                    onClick = { navController.navigate("minilib") }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Email, contentDescription = "Notes") },
-                    selected = false,
-                    onClick = { navController.navigate("notes") }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-                    selected = false,
-                    onClick = { /* settings navigation */ }
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .shadow(12.dp, RoundedCornerShape(24.dp))
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Color.White)
+            ) {
+                NavigationBar(
+                    containerColor = Color.Transparent,
+                    tonalElevation = 0.dp,
+                    modifier = Modifier.height(70.dp)
+                ) {
+                    NavigationBarItem(
+                        selected = selectedIndex == 0,
+                        onClick = { selectedIndex = 0 },
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                        label = { Text("home", fontSize = 11.sp) },
+                        alwaysShowLabel = true,
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = if (selectedIndex == 0) selectedBgColor else Color.Transparent,
+                            selectedIconColor = Color.White,
+                            selectedTextColor = Color.Black,
+                            unselectedIconColor = unselectedColor,
+                            unselectedTextColor = unselectedColor
+                        )
+                    )
+                    NavigationBarItem(
+                        selected = selectedIndex == 1,
+                        onClick = {
+                            selectedIndex = 1
+                            navController.navigate("minilib")
+                        },
+                        icon = { Icon(Icons.Default.LibraryBooks, contentDescription = "Library") },
+                        label = { Text("library", fontSize = 11.sp) },
+                        alwaysShowLabel = true,
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = if (selectedIndex == 1) selectedBgColor else Color.Transparent,
+                            selectedIconColor = Color.White,
+                            selectedTextColor = Color.Black,
+                            unselectedIconColor = unselectedColor,
+                            unselectedTextColor = unselectedColor
+                        )
+                    )
+                    NavigationBarItem(
+                        selected = selectedIndex == 2,
+                        onClick = {
+                            selectedIndex = 2
+                            navController.navigate("notes")
+                        },
+                        icon = { Icon(Icons.Default.Email, contentDescription = "Books") },
+                        label = { Text("books", fontSize = 11.sp) },
+                        alwaysShowLabel = true,
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = if (selectedIndex == 2) selectedBgColor else Color.Transparent,
+                            selectedIconColor = Color.White,
+                            selectedTextColor = Color.Black,
+                            unselectedIconColor = unselectedColor,
+                            unselectedTextColor = unselectedColor
+                        )
+                    )
+                    NavigationBarItem(
+                        selected = selectedIndex == 3,
+                        onClick = {
+                            selectedIndex = 3
+                            navController.navigate("set")},
+                        icon = { Icon(Icons.Default.Settings, contentDescription = "Setting") },
+                        label = { Text("setting", fontSize = 11.sp) },
+                        alwaysShowLabel = true,
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = if (selectedIndex == 3) selectedBgColor else Color.Transparent,
+                            selectedIconColor = Color.White,
+                            selectedTextColor = Color.Black,
+                            unselectedIconColor = unselectedColor,
+                            unselectedTextColor = unselectedColor
+                        )
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -72,7 +145,7 @@ fun HomeScreen(navController: NavHostController, viewModel: UserRecommendationPr
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Top character + speech bubble
@@ -93,7 +166,7 @@ fun HomeScreen(navController: NavHostController, viewModel: UserRecommendationPr
                 ) {
                     Text(
                         text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold)) {
+                            withStyle(style = SpanStyle(color = colorResource(id = R.color.light_green), fontWeight = FontWeight.Bold)) {
                                 // ViewModel에서 가져온 사용자 이름을 표시하거나, 이름이 없을 경우 기본값("사용자")을 표시
                                 append(userName ?: "사용자") // <-- 'OO' 대신 userName 변수 사용
                             }
@@ -101,55 +174,79 @@ fun HomeScreen(navController: NavHostController, viewModel: UserRecommendationPr
 
                             append("오늘의 ")
 
-                            withStyle(style = SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold)) {
+                            withStyle(style = SpanStyle(color = colorResource(id = R.color.light_green), fontWeight = FontWeight.Bold)) {
                                 append("인기 있는 책")
                             }
 
                             append("이나, \n")
 
-                            withStyle(style = SpanStyle(color = Color.Blue, fontWeight = FontWeight.Bold)) {
+                            withStyle(style = SpanStyle(color = colorResource(id = R.color.light_green), fontWeight = FontWeight.Bold)) {
                                 append("너만의 추천도서")
                             }
 
                             append("를 소개해줄게!")
                         },
                         modifier = Modifier.padding(13.dp),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 24.sp), fontFamily = kidFont
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
                 text = "오늘의 베스트 도서",
                 fontSize = 24.sp,
-                style = MaterialTheme.typography.titleMedium,
+                style = TextStyle(fontFamily = shfont),
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(5) { index ->
+                    val imageResId = when (index) {
+                        0 -> R.drawable.book1
+                        1 -> R.drawable.book2
+                        2 -> R.drawable.book3
+                        3 -> R.drawable.book4
+                        4 -> R.drawable.book5
+                        else -> R.drawable.book1 // 혹시 모를 예외 처리
+                    }
+
                     Box(
                         modifier = Modifier
-                            .size(width = 120.dp, height = 160.dp)
-                            .background(MaterialTheme.colorScheme.secondaryContainer, shape = RoundedCornerShape(8.dp))
+                            .size(width = 150.dp, height = 200.dp)
+                            .background(
+                                MaterialTheme.colorScheme.secondaryContainer,
+                                shape = RoundedCornerShape(8.dp)
+                            )
                             .clickable { navController.navigate("BookContents") },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "책 ${index + 1}",
-                            modifier = Modifier.align(Alignment.Center)
+                        Image(
+                            painter = painterResource(id = imageResId),
+                            contentDescription = "책 이미지 ${index + 1}",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp))
                         )
+//                        // 텍스트를 이미지 위에 오버레이하고 싶으면 아래 코드 유지
+//                        Text(
+//                            text = "책 ${index + 1}",
+//                            modifier = Modifier.align(Alignment.BottomCenter),
+//                            color = Color.White,
+//                            style = MaterialTheme.typography.bodyMedium
+//                        )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+
+            Spacer(modifier = Modifier.height(36.dp))
 
             TextButton(
                 onClick = {
@@ -162,7 +259,9 @@ fun HomeScreen(navController: NavHostController, viewModel: UserRecommendationPr
                 Text("오늘의 추천도서 바로가기 >",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF073042)
+                    color = myGreen
+                    ,
+                    style = TextStyle(fontFamily = shfont)
                 )
             }
         }

@@ -27,8 +27,15 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.lifecycle.viewmodel.compose.viewModel // ViewModel 사용
 import coil.compose.AsyncImage // Coil 이미지 로딩
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.withStyle
 
 // TODO: UserRecommendationProfileViewModel, RecommendationState, Book 클래스 필요
 
@@ -41,10 +48,14 @@ fun TodayRecScreen(navController: NavController, viewModel: UserRecommendationPr
 
     // ViewModel의 추천 상태 관찰
     val recommendationState by viewModel.recommendationState.collectAsState()
-
+    val kidFont = FontFamily(Font(R.font.uhbee_puding))
+    val selectedBgColor = Color(0xFFB9D99A) // #B9D99A
+    val unselectedColor = Color.Gray
+    var selectedIndex by remember { mutableStateOf(0) }
     // LazyRow 스크롤 상태
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    val userName by viewModel.userName.collectAsState()
 
     // 현재 중앙에 가까운 아이템의 인덱스 계산 및 해당 아이템 정보 가져오기
     val centeredBookIndex by remember {
@@ -80,29 +91,85 @@ fun TodayRecScreen(navController: NavController, viewModel: UserRecommendationPr
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    selected = false, // 현재 화면이 추천 결과 화면이므로 Home은 false
-                    onClick = { navController.navigate("home") {
-                        popUpTo("home") { inclusive = true } // Home으로 돌아가고 이전 스택 비우기
-                    } }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.LibraryBooks, contentDescription = "Bookshelf") },
-                    selected = false,
-                    onClick = { navController.navigate("minilib") } // TODO: 라우트 이름 컨벤션: minilib_screen
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Email, contentDescription = "Notes") },
-                    selected = false,
-                    onClick = { navController.navigate("notes") } // TODO: 라우트 이름 컨벤션: read_book_list_screen
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-                    selected = false,
-                    onClick = { /* settings navigation */ }
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                    .shadow(12.dp, RoundedCornerShape(24.dp))
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(Color.White)
+            ) {
+                NavigationBar(
+                    containerColor = Color.Transparent,
+                    tonalElevation = 0.dp,
+                    modifier = Modifier.height(70.dp)
+                ) {
+                    NavigationBarItem(
+                        selected = selectedIndex == 0,
+                        onClick = { selectedIndex = 0
+                            navController.navigate("home")},
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                        label = { Text("home", fontSize = 11.sp) },
+                        alwaysShowLabel = true,
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = if (selectedIndex == 0) selectedBgColor else Color.Transparent,
+                            selectedIconColor = Color.White,
+                            selectedTextColor = Color.Black,
+                            unselectedIconColor = unselectedColor,
+                            unselectedTextColor = unselectedColor
+                        )
+                    )
+                    NavigationBarItem(
+                        selected = selectedIndex == 1,
+                        onClick = {
+                            selectedIndex = 1
+                            navController.navigate("minilib")
+                        },
+                        icon = { Icon(Icons.Default.LibraryBooks, contentDescription = "Library") },
+                        label = { Text("library", fontSize = 11.sp) },
+                        alwaysShowLabel = true,
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = if (selectedIndex == 1) selectedBgColor else Color.Transparent,
+                            selectedIconColor = Color.White,
+                            selectedTextColor = Color.Black,
+                            unselectedIconColor = unselectedColor,
+                            unselectedTextColor = unselectedColor
+                        )
+                    )
+                    NavigationBarItem(
+                        selected = selectedIndex == 2,
+                        onClick = {
+                            selectedIndex = 2
+                            navController.navigate("notes")
+                        },
+                        icon = { Icon(Icons.Default.Email, contentDescription = "Books") },
+                        label = { Text("books", fontSize = 11.sp) },
+                        alwaysShowLabel = true,
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = if (selectedIndex == 2) selectedBgColor else Color.Transparent,
+                            selectedIconColor = Color.White,
+                            selectedTextColor = Color.Black,
+                            unselectedIconColor = unselectedColor,
+                            unselectedTextColor = unselectedColor
+                        )
+                    )
+                    NavigationBarItem(
+                        selected = selectedIndex == 3,
+                        onClick = {
+                            selectedIndex = 3
+                            navController.navigate("set")},
+                        icon = { Icon(Icons.Default.Settings, contentDescription = "Setting") },
+                        label = { Text("setting", fontSize = 11.sp) },
+                        alwaysShowLabel = true,
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = if (selectedIndex == 3) selectedBgColor else Color.Transparent,
+                            selectedIconColor = Color.White,
+                            selectedTextColor = Color.Black,
+                            unselectedIconColor = unselectedColor,
+                            unselectedTextColor = unselectedColor
+                        )
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -116,14 +183,21 @@ fun TodayRecScreen(navController: NavController, viewModel: UserRecommendationPr
             Spacer(modifier = Modifier.height(16.dp)) // 상단 여백
 
             Text(
-                text = "OO이를 위한", // TODO: ViewModel에서 사용자 이름 가져와 표시
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "오늘의 추천도서",
-                fontSize = 20.sp,
-                color = Color.Gray
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = colorResource(id = R.color.light_green),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 28.sp,
+                        )
+                    ) {
+                        // ViewModel에서 가져온 사용자 이름을 표시하거나, 이름이 없을 경우 기본값("사용자")을 표시
+                        append(userName ?: "사용자") // <-- 'OO' 대신 userName 변수 사용
+                    }
+                    append("이를 위한\n")
+
+                    append("오늘의 추천도서📚")
+                }
             )
 
             Spacer(modifier = Modifier.height(24.dp))

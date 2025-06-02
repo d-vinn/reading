@@ -8,7 +8,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.clickable // clickable 임포트 추가
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,16 +36,14 @@ import coil.compose.AsyncImage // Coil 이미지 로딩
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.withStyle
+import java.net.URLEncoder // URL 인코딩을 위해 추가
+import java.nio.charset.StandardCharsets // URL 인코딩을 위해 추가
 
-// TODO: UserRecommendationProfileViewModel, RecommendationState, Book 클래스 필요
+// TODO: UserRecommendationProfileViewModel, RecommendationState, Book 클래스 필요 (현재 파일에 정의되어 있거나, 다른 파일에서 임포트)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TodayRecScreen(navController: NavController, viewModel: UserRecommendationProfileViewModel) { // <--- 이 줄이 핵심 변경
-    // Shared ViewModel 인스턴스 가져오기
-    // MainActivity에서 ViewModelStoreOwner를 지정했으므로 동일 인스턴스를 가져옵니다.
-//    val viewModel: UserRecommendationProfileViewModel = viewModel()
-
+fun TodayRecScreen(navController: NavController, viewModel: UserRecommendationProfileViewModel) {
     // ViewModel의 추천 상태 관찰
     val recommendationState by viewModel.recommendationState.collectAsState()
     val kidFont = FontFamily(Font(R.font.uhbee_puding))
@@ -285,15 +283,14 @@ fun RecommendedBookItem(
     Column(
         modifier = Modifier
             .width(itemWidth)
+            // 책 클릭 시 상세 화면으로 이동하는 clickable 모디파이어 추가
             .clickable {
-                // 책 클릭 시 상세 화면으로 이동
-                // BookContents 라우트가 bookId를 인자로 받도록 네비게이션 그래프에 설정해야 합니다.
-                // 예: composable("book_contents_screen/{bookId}") { ... }
-                // book.book_id는 ISBN13입니다. URL 인코딩이 필요할 수 있습니다.
                 val bookId = book.book_id
                 if (bookId.isNotBlank()) {
-                    // TODO: URLEncoder.encode 사용 고려 (ISBN은 안전한 문자만 포함하는 경우가 많음)
-                    navController.navigate("BookContents/${bookId}") // TODO: 라우트 이름 컨벤션: book_contents_screen
+                    // URL 인코딩을 사용하여 bookId에 특수 문자가 포함되어도 안전하게 전달
+                    val encodedBookId = URLEncoder.encode(bookId, StandardCharsets.UTF_8.toString())
+                    // "BookContents/{bookId}" 라우트로 이동. BookContentsScreen에서 이 bookId를 받아서 사용.
+                    navController.navigate("BookContents/${encodedBookId}")
                 }
             },
         horizontalAlignment = Alignment.CenterHorizontally
@@ -325,6 +322,5 @@ fun RecommendedBookItem(
 
         // TODO: 저자, 출판사 등 추가 정보 표시 가능
         // Text(text = book.author ?: "저자 정보 없음", fontSize = 12.sp)
-
     }
 }

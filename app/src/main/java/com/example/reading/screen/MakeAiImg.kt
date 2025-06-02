@@ -67,7 +67,7 @@ fun MakeAiImgScreen(navController: NavController) {
                     NavigationBarItem(
                         selected = selectedIndex == 0,
                         onClick = { selectedIndex = 0
-                                  navController.navigate("home")},
+                            navController.navigate("home")},
                         icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                         label = { Text("home", fontSize = 11.sp) },
                         alwaysShowLabel = true,

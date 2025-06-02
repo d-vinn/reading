@@ -46,7 +46,7 @@ fun MyReportNImgScreen(navController: NavController, thoughtTextFromReport: Stri
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
                     selected = false,
-                    onClick = { "set" }
+                    onClick = { /* 설정 화면 이동 */ }
                 )
             }
         }

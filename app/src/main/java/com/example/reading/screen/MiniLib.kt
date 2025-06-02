@@ -1,10 +1,8 @@
 package com.example.reading
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Book
@@ -16,12 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,23 +21,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.withStyle
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MiniLibScreen(navController: NavController, viewModel: UserRecommendationProfileViewModel) {
+fun MiniLibScreen(navController: NavController) {
     // 책장 목록을 저장하는 상태
     val defaultBookShelves = listOf("간단한 책이 담긴 책장", "잔잔한 책이 담긴 책장")
-    val kidFont = FontFamily(Font(R.font.uhbee_puding))
-    val selectedBgColor = Color(0xFFB9D99A) // #B9D99A
-    val unselectedColor = Color.Gray
-    val userName by viewModel.userName.collectAsState()
-
-
-    var selectedIndex by remember { mutableStateOf(1) }
     var bookShelves by remember { mutableStateOf(defaultBookShelves) }
 
     // 새 책장 추가 다이얼로그 표시 상태
@@ -59,102 +40,34 @@ fun MiniLibScreen(navController: NavController, viewModel: UserRecommendationPro
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = colorResource(id = R.color.light_green),
-                                    fontWeight = FontWeight.Bold
-                                )
-                            ) {
-                                // ViewModel에서 가져온 사용자 이름을 표시하거나, 이름이 없을 경우 기본값("사용자")을 표시
-                                append(userName ?: "사용자") // <-- 'OO' 대신 userName 변수 사용
-                            }
-                            append("이의 미니 도서관📖.\n")
-                        }
+                        text = "OO이의 미니도서관",
+                        fontWeight = FontWeight.Bold
                     )
                 }
             )
         },
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
-                    .shadow(12.dp, RoundedCornerShape(24.dp))
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Color.White)
-            ) {
-                NavigationBar(
-                    containerColor = Color.Transparent,
-                    tonalElevation = 0.dp,
-                    modifier = Modifier.height(70.dp)
-                ) {
-                    NavigationBarItem(
-                        selected = selectedIndex == 0,
-                        onClick = { selectedIndex = 0
-                                  navController.navigate("home")},
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                        label = { Text("home", fontSize = 11.sp) },
-                        alwaysShowLabel = true,
-                        colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = if (selectedIndex == 0) selectedBgColor else Color.Transparent,
-                            selectedIconColor = Color.White,
-                            selectedTextColor = Color.Black,
-                            unselectedIconColor = unselectedColor,
-                            unselectedTextColor = unselectedColor
-                        )
-                    )
-                    NavigationBarItem(
-                        selected = selectedIndex == 1,
-                        onClick = {
-                            selectedIndex = 1
-                            navController.navigate("minilib")
-                        },
-                        icon = { Icon(Icons.Default.LibraryBooks, contentDescription = "Library") },
-                        label = { Text("library", fontSize = 11.sp) },
-                        alwaysShowLabel = true,
-                        colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = if (selectedIndex == 1) selectedBgColor else Color.Transparent,
-                            selectedIconColor = Color.White,
-                            selectedTextColor = Color.Black,
-                            unselectedIconColor = unselectedColor,
-                            unselectedTextColor = unselectedColor
-                        )
-                    )
-                    NavigationBarItem(
-                        selected = selectedIndex == 2,
-                        onClick = {
-                            selectedIndex = 2
-                            navController.navigate("notes")
-                        },
-                        icon = { Icon(Icons.Default.Email, contentDescription = "Books") },
-                        label = { Text("books", fontSize = 11.sp) },
-                        alwaysShowLabel = true,
-                        colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = if (selectedIndex == 2) selectedBgColor else Color.Transparent,
-                            selectedIconColor = Color.White,
-                            selectedTextColor = Color.Black,
-                            unselectedIconColor = unselectedColor,
-                            unselectedTextColor = unselectedColor
-                        )
-                    )
-                    NavigationBarItem(
-                        selected = selectedIndex == 3,
-                        onClick = {
-                            selectedIndex = 3
-                            navController.navigate("set")},
-                        icon = { Icon(Icons.Default.Settings, contentDescription = "Setting") },
-                        label = { Text("setting", fontSize = 11.sp) },
-                        alwaysShowLabel = true,
-                        colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = if (selectedIndex == 3) selectedBgColor else Color.Transparent,
-                            selectedIconColor = Color.White,
-                            selectedTextColor = Color.Black,
-                            unselectedIconColor = unselectedColor,
-                            unselectedTextColor = unselectedColor
-                        )
-                    )
-                }
+            NavigationBar {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    selected = false,
+                    onClick = { navController.navigate("home") }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.LibraryBooks, contentDescription = "Bookshelf") },
+                    selected = true,
+                    onClick = { /* 현재 화면 */ }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Email, contentDescription = "Notes") },
+                    selected = false,
+                    onClick = { /* notes navigation */ }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                    selected = false,
+                    onClick = { /* settings navigation */ }
+                )
             }
         }
     ) { innerPadding ->

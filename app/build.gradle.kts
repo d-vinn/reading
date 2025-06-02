@@ -57,6 +57,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("io.coil-kt:coil-compose:2.4.0") // 최신 버전 확인 후 사용
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.3")
     // ViewModel Compose Integration
     testImplementation(libs.junit)

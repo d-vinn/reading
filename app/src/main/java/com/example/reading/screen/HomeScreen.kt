@@ -256,8 +256,8 @@ fun HomeScreen(navController: NavHostController, viewModel: UserRecommendationPr
                     navController.navigate("TodayRec")
                 },
             ) {
-                Text("오늘의 추천도서 바로가기 >",
-                    fontSize = 28.sp,
+                Text("오늘의 추천도서 바로가기>",
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = myGreen
                     ,
